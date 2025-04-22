@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNutrition } from "@/contexts/NutritionContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,7 @@ import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { FoodSearch } from "./FoodSearch";
 import { MealTypeSelect } from "./MealTypeSelect";
-import { SAMPLE_FOODS, FoodData } from "@/data/sampleFoods";
+import { SAMPLE_FOODS } from "@/data/sampleFoods";
 
 export const AddFoodForm = () => {
   const { addFoodItem } = useNutrition();
@@ -26,35 +26,28 @@ export const AddFoodForm = () => {
   const [quantity, setQuantity] = useState(1);
   const [mealType, setMealType] = useState<"breakfast" | "lunch" | "dinner" | "snack">("breakfast");
   const [searchValue, setSearchValue] = useState("");
-  const [selectedFoodData, setSelectedFoodData] = useState<FoodData | null>(null);
-  
-  // Update selected food data when food is selected
-  useEffect(() => {
-    const foodData = SAMPLE_FOODS.find(food => food.name === selectedFood);
-    setSelectedFoodData(foodData || null);
-  }, [selectedFood]);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!selectedFoodData) {
+    const foodData = SAMPLE_FOODS.find(food => food.name === selectedFood);
+    
+    if (!foodData) {
       toast.error("Please select a food from the list");
       return;
     }
     
     addFoodItem({
-      ...selectedFoodData,
+      ...foodData,
       quantity,
       mealType
     });
     
     toast.success("Food added to your log");
     
-    // Reset form
     setSelectedFood("");
     setQuantity(1);
     setSearchValue("");
-    setSelectedFoodData(null);
     setIsDialogOpen(false);
   };
   
@@ -84,19 +77,6 @@ export const AddFoodForm = () => {
             }}
             foods={SAMPLE_FOODS}
           />
-          
-          {selectedFoodData && (
-            <div className="rounded-md border p-3 bg-muted/30">
-              <h4 className="font-medium">{selectedFoodData.name}</h4>
-              <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
-                <div>Calories: {selectedFoodData.calories} kcal</div>
-                <div>Protein: {selectedFoodData.protein}g</div>
-                <div>Carbs: {selectedFoodData.carbs}g</div>
-                <div>Fat: {selectedFoodData.fat}g</div>
-                <div>Serving: {selectedFoodData.servingSize}</div>
-              </div>
-            </div>
-          )}
           
           <div className="space-y-2">
             <Label htmlFor="quantity">Quantity</Label>
