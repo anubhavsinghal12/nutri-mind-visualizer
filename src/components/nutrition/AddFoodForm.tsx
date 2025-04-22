@@ -112,23 +112,67 @@ const SAMPLE_FOODS = [
     sugar: 6,
     sodium: 36,
     servingSize: "6oz (170g)"
-  }
+  },
+  {"name": "Chapati", "calories": 104, "protein": 3.5, "carbs": 18, "fat": 3, "fiber": 2.5, "sugar": 0.2, "sodium": 120, "servingSize": "1 medium (40g)"},
+  {"name": "Paneer", "calories": 265, "protein": 18, "carbs": 1.2, "fat": 21, "fiber": 0, "sugar": 0.5, "sodium": 22, "servingSize": "100g"},
+  {"name": "Dal Tadka", "calories": 180, "protein": 9, "carbs": 23, "fat": 6, "fiber": 4, "sugar": 2, "sodium": 300, "servingSize": "1 cup (200g)"},
+  {"name": "Rajma", "calories": 210, "protein": 13, "carbs": 36, "fat": 1, "fiber": 9, "sugar": 2.2, "sodium": 140, "servingSize": "1 cup (200g)"},
+  {"name": "Chole", "calories": 230, "protein": 12, "carbs": 30, "fat": 7, "fiber": 8, "sugar": 3, "sodium": 160, "servingSize": "1 cup (200g)"},
+  {"name": "Idli", "calories": 58, "protein": 1.6, "carbs": 12, "fat": 0.4, "fiber": 0.8, "sugar": 0.1, "sodium": 80, "servingSize": "1 piece (40g)"},
+  {"name": "Dosa", "calories": 133, "protein": 2.7, "carbs": 18, "fat": 5, "fiber": 1, "sugar": 0.2, "sodium": 130, "servingSize": "1 medium (60g)"},
+  {"name": "Sambar", "calories": 150, "protein": 6, "carbs": 20, "fat": 4, "fiber": 3, "sugar": 3, "sodium": 250, "servingSize": "1 cup (200g)"},
+  {"name": "Poha", "calories": 206, "protein": 4, "carbs": 32, "fat": 6, "fiber": 2.5, "sugar": 1.2, "sodium": 210, "servingSize": "1 cup (150g)"},
+  {"name": "Upma", "calories": 220, "protein": 5, "carbs": 35, "fat": 7, "fiber": 2, "sugar": 1, "sodium": 190, "servingSize": "1 cup (150g)"},
+  {"name": "Aloo Paratha", "calories": 290, "protein": 6, "carbs": 45, "fat": 10, "fiber": 4, "sugar": 2, "sodium": 230, "servingSize": "1 piece (100g)"},
+  {"name": "Pulao", "calories": 250, "protein": 5, "carbs": 35, "fat": 9, "fiber": 2, "sugar": 1, "sodium": 200, "servingSize": "1 cup (200g)"},
+  {"name": "Kadhi", "calories": 120, "protein": 6, "carbs": 10, "fat": 6, "fiber": 1, "sugar": 3, "sodium": 300, "servingSize": "1 cup (200g)"},
+  {"name": "Vegetable Curry", "calories": 180, "protein": 4, "carbs": 20, "fat": 9, "fiber": 3, "sugar": 4, "sodium": 240, "servingSize": "1 cup (200g)"},
+  {"name": "Bhindi Fry", "calories": 140, "protein": 2, "carbs": 10, "fat": 10, "fiber": 4, "sugar": 3, "sodium": 180, "servingSize": "1 cup (150g)"},
+  {"name": "Tinda Sabzi", "calories": 110, "protein": 2, "carbs": 10, "fat": 7, "fiber": 3, "sugar": 2, "sodium": 150, "servingSize": "1 cup (150g)"},
+  {"name": "Lauki Sabzi", "calories": 90, "protein": 2, "carbs": 8, "fat": 5, "fiber": 2, "sugar": 2, "sodium": 160, "servingSize": "1 cup (150g)"},
+  {"name": "Mixed Vegetable", "calories": 160, "protein": 4, "carbs": 18, "fat": 8, "fiber": 4, "sugar": 3, "sodium": 220, "servingSize": "1 cup (200g)"},
+  {"name": "Kheer", "calories": 210, "protein": 5, "carbs": 30, "fat": 8, "fiber": 0.5, "sugar": 18, "sodium": 120, "servingSize": "1 cup (150g)"},
+  {"name": "Halwa", "calories": 250, "protein": 4, "carbs": 38, "fat": 10, "fiber": 1, "sugar": 25, "sodium": 100, "servingSize": "1 piece (100g)"},
+  {"name": "Mango", "calories": 99, "protein": 1.4, "carbs": 25, "fat": 0.6, "fiber": 2.6, "sugar": 23, "sodium": 2, "servingSize": "1 medium (200g)"},
+    {"name": "Guava", "calories": 68, "protein": 2.6, "carbs": 14, "fat": 1, "fiber": 5.4, "sugar": 9, "sodium": 2, "servingSize": "1 medium (150g)"},
+    {"name": "Papaya", "calories": 59, "protein": 0.9, "carbs": 15, "fat": 0.4, "fiber": 2.5, "sugar": 11, "sodium": 4, "servingSize": "1 cup (140g)"},
+    {"name": "Orange", "calories": 62, "protein": 1.2, "carbs": 15.4, "fat": 0.2, "fiber": 3.1, "sugar": 12.2, "sodium": 0, "servingSize": "1 medium (131g)"},
+    {"name": "Pomegranate", "calories": 83, "protein": 1.7, "carbs": 19, "fat": 1.2, "fiber": 4, "sugar": 14, "sodium": 3, "servingSize": "1/2 cup (87g)"}
 ];
 
 export const AddFoodForm = () => {
   const { addFoodItem } = useNutrition();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedFood, setSelectedFood] = useState("");
+  const [filteredFoods, setFilteredFoods] = useState<string[]>([]);
   const [quantity, setQuantity] = useState(1);
   const [mealType, setMealType] = useState<"breakfast" | "lunch" | "dinner" | "snack">("breakfast");
-  
+
+  const handleInputChange = (value: string) => {
+    setSelectedFood(value);
+
+    const suggestions = SAMPLE_FOODS
+      .map((f) => f.name)
+      .filter((name) =>
+        name.toLowerCase().includes(value.toLowerCase())
+      )
+      .slice(0, 5); // max 5 suggestions
+
+    setFilteredFoods(suggestions);
+  };
+
+  const handleSuggestionClick = (value: string) => {
+    setSelectedFood(value);
+    setFilteredFoods([]);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const foodData = SAMPLE_FOODS.find(food => food.name === selectedFood);
+    const foodData = SAMPLE_FOODS.find(food => food.name.toLowerCase() === selectedFood.toLowerCase());
     
     if (!foodData) {
-      toast.error("Please select a food from the list");
+      toast.error("Please select a valid food item from the list");
       return;
     }
     
@@ -139,13 +183,14 @@ export const AddFoodForm = () => {
     });
     
     toast.success("Food added to your log");
-    
+
     // Reset form
     setSelectedFood("");
+    setFilteredFoods([]);
     setQuantity(1);
     setIsDialogOpen(false);
   };
-  
+
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
@@ -161,28 +206,33 @@ export const AddFoodForm = () => {
             Select a food item and specify the quantity and meal type.
           </DialogDescription>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
-          <div className="space-y-2">
+          <div className="space-y-2 relative">
             <Label htmlFor="food">Food Item</Label>
-            <Select
+            <Input
+              id="food"
               value={selectedFood}
-              onValueChange={setSelectedFood}
+              onChange={(e) => handleInputChange(e.target.value)}
+              placeholder="Start typing a food..."
+              autoComplete="off"
               required
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a food" />
-              </SelectTrigger>
-              <SelectContent>
-                {SAMPLE_FOODS.map((food) => (
-                  <SelectItem key={food.name} value={food.name}>
-                    {food.name}
-                  </SelectItem>
+            />
+            {filteredFoods.length > 0 && (
+              <div className="absolute z-10 mt-1 w-full bg-white border rounded shadow">
+                {filteredFoods.map((item) => (
+                  <div
+                    key={item}
+                    className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => handleSuggestionClick(item)}
+                  >
+                    {item}
+                  </div>
                 ))}
-              </SelectContent>
-            </Select>
+              </div>
+            )}
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="quantity">Quantity</Label>
             <Input
@@ -195,28 +245,28 @@ export const AddFoodForm = () => {
               required
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="mealType">Meal Type</Label>
-            <Select
+            <Input
+              id="mealType"
               value={mealType}
-              onValueChange={(value) => 
-                setMealType(value as "breakfast" | "lunch" | "dinner" | "snack")
+              onChange={(e) =>
+                setMealType(
+                  e.target.value as "breakfast" | "lunch" | "dinner" | "snack"
+                )
               }
+              list="meal-types"
               required
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select meal type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="breakfast">Breakfast</SelectItem>
-                <SelectItem value="lunch">Lunch</SelectItem>
-                <SelectItem value="dinner">Dinner</SelectItem>
-                <SelectItem value="snack">Snack</SelectItem>
-              </SelectContent>
-            </Select>
+            />
+            <datalist id="meal-types">
+              <option value="breakfast" />
+              <option value="lunch" />
+              <option value="dinner" />
+              <option value="snack" />
+            </datalist>
           </div>
-          
+
           <DialogFooter className="pt-4">
             <Button 
               type="button" 
