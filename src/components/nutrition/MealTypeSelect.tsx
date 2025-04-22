@@ -24,7 +24,7 @@ export const MealTypeSelect = ({ value, onChange }: MealTypeSelectProps) => {
         }
         required
       >
-        <SelectTrigger>
+        <SelectTrigger id="mealType">
           <SelectValue placeholder="Select meal type" />
         </SelectTrigger>
         <SelectContent>
