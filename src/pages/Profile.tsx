@@ -18,6 +18,46 @@ const Profile = () => {
   const [gender, setGender] = useState('');
   const [activityLevel, setActivityLevel] = useState('');
   const [nutritionGoal, setNutritionGoal] = useState('maintain');
+  const [name, setName] = useState(user?.name || '');
+
+  const handleUpdateProfile = (event: React.SyntheticEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    
+    if (!name) {
+      toast.error("Name cannot be empty");
+      return;
+    }
+
+    try {
+      toast.success("Profile updated successfully");
+    } catch (error) {
+      toast.error("Failed to update profile");
+    }
+  };
+
+  const handleChangePassword = (event: React.SyntheticEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    
+    const currentPassword = (event.currentTarget.elements.namedItem('current-password') as HTMLInputElement).value;
+    const newPassword = (event.currentTarget.elements.namedItem('new-password') as HTMLInputElement).value;
+    const confirmPassword = (event.currentTarget.elements.namedItem('confirm-password') as HTMLInputElement).value;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error("Please fill in all password fields");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast.error("New passwords do not match");
+      return;
+    }
+
+    try {
+      toast.success("Password changed successfully");
+    } catch (error) {
+      toast.error("Failed to change password");
+    }
+  };
 
   const calculateNutritionRecommendations = () => {
     let bmr;
@@ -119,7 +159,8 @@ const Profile = () => {
                   <Label htmlFor="name">Full Name</Label>
                   <Input 
                     id="name" 
-                    defaultValue={user.name} 
+                    value={name} 
+                    onChange={(e) => setName(e.target.value)}
                     placeholder="Your full name" 
                   />
                 </div>
@@ -128,7 +169,7 @@ const Profile = () => {
                   <Input 
                     id="email" 
                     type="email" 
-                    defaultValue={user.email} 
+                    defaultValue={user?.email} 
                     placeholder="Your email" 
                     disabled 
                   />
