@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNutrition } from "@/contexts/NutritionContext";
 import { Button } from "@/components/ui/button";
@@ -19,16 +20,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 
+// Sample food database (in a real app, this would come from an API)
 const SAMPLE_FOODS = [
   {
     name: "Apple",
@@ -117,39 +112,6 @@ const SAMPLE_FOODS = [
     sugar: 6,
     sodium: 36,
     servingSize: "6oz (170g)"
-  },
-  {
-    name: "Sweet Potato",
-    calories: 103,
-    protein: 2,
-    carbs: 24,
-    fat: 0.2,
-    fiber: 3.8,
-    sugar: 6.5,
-    sodium: 41,
-    servingSize: "1 medium (130g)"
-  },
-  {
-    name: "Quinoa",
-    calories: 120,
-    protein: 4.4,
-    carbs: 21.3,
-    fat: 1.9,
-    fiber: 2.8,
-    sugar: 0.9,
-    sodium: 7,
-    servingSize: "1/2 cup cooked (100g)"
-  },
-  {
-    name: "Almonds",
-    calories: 164,
-    protein: 6,
-    carbs: 6,
-    fat: 14,
-    fiber: 3.5,
-    sugar: 1.2,
-    sodium: 1,
-    servingSize: "1 oz (28g)"
   }
 ];
 
@@ -159,7 +121,6 @@ export const AddFoodForm = () => {
   const [selectedFood, setSelectedFood] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [mealType, setMealType] = useState<"breakfast" | "lunch" | "dinner" | "snack">("breakfast");
-  const [searchValue, setSearchValue] = useState("");
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -179,9 +140,9 @@ export const AddFoodForm = () => {
     
     toast.success("Food added to your log");
     
+    // Reset form
     setSelectedFood("");
     setQuantity(1);
-    setSearchValue("");
     setIsDialogOpen(false);
   };
   
@@ -204,32 +165,22 @@ export const AddFoodForm = () => {
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
           <div className="space-y-2">
             <Label htmlFor="food">Food Item</Label>
-            <Command className="rounded-lg border shadow-md">
-              <CommandInput 
-                placeholder="Search for a food..."
-                value={searchValue}
-                onValueChange={setSearchValue}
-              />
-              <CommandEmpty>No food found.</CommandEmpty>
-              <CommandGroup className="max-h-64 overflow-y-auto">
-                {SAMPLE_FOODS
-                  .filter(food => 
-                    food.name.toLowerCase().includes(searchValue.toLowerCase())
-                  )
-                  .map((food) => (
-                    <CommandItem
-                      key={food.name}
-                      value={food.name}
-                      onSelect={(value) => {
-                        setSelectedFood(value);
-                        setSearchValue(value);
-                      }}
-                    >
-                      {food.name}
-                    </CommandItem>
-                  ))}
-              </CommandGroup>
-            </Command>
+            <Select
+              value={selectedFood}
+              onValueChange={setSelectedFood}
+              required
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a food" />
+              </SelectTrigger>
+              <SelectContent>
+                {SAMPLE_FOODS.map((food) => (
+                  <SelectItem key={food.name} value={food.name}>
+                    {food.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           
           <div className="space-y-2">
