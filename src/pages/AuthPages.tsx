@@ -4,7 +4,7 @@ import { LoginForm, SignupForm } from "@/components/AuthForms";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BrainCircuit } from "lucide-react";
+import { AuthHeader } from "@/components/auth/AuthHeader";
 
 export const LoginPage = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -23,18 +23,7 @@ export const LoginPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col justify-center bg-gray-50 py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center">
-          <BrainCircuit className="h-12 w-12 text-primary" />
-        </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          NutriMind AI
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Smart Dietary Choices with AI-Powered Nutrition Analysis
-        </p>
-      </div>
-
+      <AuthHeader />
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <LoginForm />
         <div className="mt-6 text-center">
@@ -67,18 +56,7 @@ export const SignupPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col justify-center bg-gray-50 py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center">
-          <BrainCircuit className="h-12 w-12 text-primary" />
-        </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          NutriMind AI
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Smart Dietary Choices with AI-Powered Nutrition Analysis
-        </p>
-      </div>
-
+      <AuthHeader />
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <SignupForm />
         <div className="mt-6 text-center">
@@ -112,18 +90,7 @@ export const AuthPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col justify-center bg-gray-50 py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center">
-          <BrainCircuit className="h-12 w-12 text-primary" />
-        </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          NutriMind AI
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Smart Dietary Choices with AI-Powered Nutrition Analysis
-        </p>
-      </div>
-
+      <AuthHeader />
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-6">
