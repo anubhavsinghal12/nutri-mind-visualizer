@@ -22,7 +22,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set up auth state listener
+    // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
@@ -31,7 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
-    // Check for existing session
+    // Then check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -43,23 +43,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error, data } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) throw error;
-      toast.success("Successfully logged in!");
+      
+      if (!data.user) {
+        throw new Error("User not found");
+      }
+      
+      return;
     } catch (error) {
-      const e = error as Error;
-      toast.error(e.message);
+      console.error("Login error:", error);
       throw error;
     }
   };
 
   const signup = async (email: string, name: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signUp({
+      const { error, data } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -70,10 +74,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) throw error;
-      toast.success("Account created successfully! Please verify your email.");
+      
+      if (data?.user) {
+        toast.success("Account created successfully! Please verify your email.");
+      }
+      
     } catch (error) {
-      const e = error as Error;
-      toast.error(e.message);
+      console.error("Signup error:", error);
       throw error;
     }
   };
@@ -84,8 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error) throw error;
       toast.success("Successfully logged out!");
     } catch (error) {
-      const e = error as Error;
-      toast.error(e.message);
+      console.error("Logout error:", error);
       throw error;
     }
   };
