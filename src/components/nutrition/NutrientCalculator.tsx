@@ -5,21 +5,29 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Calculator } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { Calculator, Weight, Height } from "lucide-react";
 
 export const NutrientCalculator = () => {
   const [weight, setWeight] = useState<string>("");
+  const [height, setHeight] = useState<string>("");
   const [activityLevel, setActivityLevel] = useState<string>("moderate");
   const [gender, setGender] = useState<string>("male");
+  const [age, setAge] = useState<string>("");
+  const [goalMultiplier, setGoalMultiplier] = useState<number>(100);
   const [results, setResults] = useState<{
     calories: number;
     protein: number;
+    carbs: number;
+    fat: number;
   } | null>(null);
 
   const calculateNutrients = () => {
-    if (!weight || isNaN(Number(weight))) return;
+    if (!weight || !height || !age || isNaN(Number(weight)) || isNaN(Number(height)) || isNaN(Number(age))) return;
     
     const weightNum = Number(weight);
+    const heightNum = Number(height);
+    const ageNum = Number(age);
     
     // Activity level multipliers
     const activityMultipliers = {
@@ -30,26 +38,32 @@ export const NutrientCalculator = () => {
       veryActive: 1.9
     };
     
-    // Gender based multipliers
-    const genderMultiplier = gender === "male" ? 1 : 0.9;
+    // BMR calculation using Mifflin-St Jeor Equation
+    let bmr;
+    if (gender === "male") {
+      bmr = 10 * weightNum + 6.25 * heightNum - 5 * ageNum + 5;
+    } else {
+      bmr = 10 * weightNum + 6.25 * heightNum - 5 * ageNum - 161;
+    }
     
-    // Base calculations
-    // Basic BMR calculation (simplified)
-    const bmr = weightNum * 10 * genderMultiplier;
+    // Calculate TDEE (Total Daily Energy Expenditure)
+    const tdee = bmr * activityMultipliers[activityLevel as keyof typeof activityMultipliers];
     
-    // Calculate daily calories based on activity level
-    const calories = Math.round(bmr * activityMultipliers[activityLevel as keyof typeof activityMultipliers]);
+    // Apply goal multiplier (percentage)
+    const calories = Math.round(tdee * (goalMultiplier / 100));
     
-    // Calculate protein (0.8g - 1.6g per kg of body weight depending on activity)
-    const proteinMultiplier = 
-      activityLevel === "sedentary" ? 0.8 :
-      activityLevel === "light" ? 1.0 :
-      activityLevel === "moderate" ? 1.2 :
-      activityLevel === "active" ? 1.4 : 1.6;
+    // Macronutrient calculations
+    // Protein: 1.6-2.2g per kg for active individuals
+    const protein = Math.round(weightNum * (activityLevel === "sedentary" ? 1.6 : 2.2));
     
-    const protein = Math.round(weightNum * proteinMultiplier);
+    // Fat: 25% of total calories
+    const fat = Math.round((calories * 0.25) / 9);
     
-    setResults({ calories, protein });
+    // Remaining calories from carbs
+    const carbCalories = calories - (protein * 4) - (fat * 9);
+    const carbs = Math.round(carbCalories / 4);
+    
+    setResults({ calories, protein, carbs, fat });
   };
 
   return (
@@ -57,22 +71,52 @@ export const NutrientCalculator = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Calculator className="h-5 w-5 text-primary" />
-          Calorie & Protein Calculator
+          Advanced Nutrition Calculator
         </CardTitle>
         <CardDescription>
-          Calculate your recommended daily calories and protein intake based on your weight
+          Calculate your recommended daily nutrition based on your body metrics
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="weight" className="flex items-center gap-2">
+                <Weight className="h-4 w-4" />
+                Weight (kg)
+              </Label>
+              <Input
+                id="weight"
+                type="number"
+                placeholder="Enter your weight in kg"
+                value={weight}
+                onChange={(e) => setWeight(e.target.value)}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="height" className="flex items-center gap-2">
+                <Height className="h-4 w-4" />
+                Height (cm)
+              </Label>
+              <Input
+                id="height"
+                type="number"
+                placeholder="Enter your height in cm"
+                value={height}
+                onChange={(e) => setHeight(e.target.value)}
+              />
+            </div>
+          </div>
+
           <div className="space-y-2">
-            <Label htmlFor="weight">Weight (kg)</Label>
+            <Label htmlFor="age">Age (years)</Label>
             <Input
-              id="weight"
+              id="age"
               type="number"
-              placeholder="Enter your weight in kg"
-              value={weight}
-              onChange={(e) => setWeight(e.target.value)}
+              placeholder="Enter your age"
+              value={age}
+              onChange={(e) => setAge(e.target.value)}
             />
           </div>
           
@@ -115,18 +159,49 @@ export const NutrientCalculator = () => {
               </div>
             </RadioGroup>
           </div>
+
+          <div className="space-y-2">
+            <Label>Nutrition Goal ({goalMultiplier}% of maintenance)</Label>
+            <Slider
+              value={[goalMultiplier]}
+              onValueChange={(values) => setGoalMultiplier(values[0])}
+              min={70}
+              max={130}
+              step={5}
+              className="w-full"
+            />
+            <div className="text-sm text-muted-foreground mt-1">
+              {goalMultiplier < 100 ? "Caloric deficit" : goalMultiplier > 100 ? "Caloric surplus" : "Maintenance"}
+            </div>
+          </div>
           
           <Button onClick={calculateNutrients} className="w-full">Calculate</Button>
           
           {results && (
             <div className="mt-4 p-4 bg-muted rounded-md">
-              <h4 className="font-medium text-lg mb-2">Results</h4>
+              <h4 className="font-medium text-lg mb-2">Your Custom Nutrition Plan</h4>
               <div className="space-y-2">
-                <p><span className="font-medium">Daily Calories:</span> {results.calories} kcal</p>
-                <p><span className="font-medium">Daily Protein:</span> {results.protein}g</p>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Note: These are estimates based on your weight and activity level. Consult a healthcare professional for personalized advice.
+                <p className="flex justify-between">
+                  <span className="font-medium">Daily Calories:</span>
+                  <span>{results.calories} kcal</span>
                 </p>
+                <p className="flex justify-between">
+                  <span className="font-medium">Daily Protein:</span>
+                  <span>{results.protein}g</span>
+                </p>
+                <p className="flex justify-between">
+                  <span className="font-medium">Daily Carbs:</span>
+                  <span>{results.carbs}g</span>
+                </p>
+                <p className="flex justify-between">
+                  <span className="font-medium">Daily Fat:</span>
+                  <span>{results.fat}g</span>
+                </p>
+                <div className="text-xs text-muted-foreground mt-2 space-y-1">
+                  <p>* Based on Mifflin-St Jeor equation for BMR calculation</p>
+                  <p>* Protein recommendations based on activity level and body weight</p>
+                  <p>* Consult a healthcare professional for personalized advice</p>
+                </div>
               </div>
             </div>
           )}
@@ -135,3 +210,4 @@ export const NutrientCalculator = () => {
     </Card>
   );
 };
+
