@@ -9,6 +9,9 @@ export const Navbar = () => {
   const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Get user's name from metadata or use email as fallback
+  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
+
   return (
     <nav className="bg-white border-b border-gray-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -21,7 +24,7 @@ export const Navbar = () => {
           </div>
           
           <div className="hidden md:flex items-center space-x-4">
-            <span className="text-sm text-gray-600">Welcome, {user?.name}</span>
+            <span className="text-sm text-gray-600">Welcome, {userName}</span>
             <Button variant="outline" onClick={logout}>Logout</Button>
           </div>
           

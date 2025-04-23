@@ -7,9 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { User, Shield } from "lucide-react";
+import { useState } from "react";
 
 const Profile = () => {
   const { user, logout } = useAuth();
+  // Get user's name from metadata or use email as fallback
+  const [name, setName] = useState(user?.user_metadata?.full_name || user?.email?.split('@')[0] || '');
 
   const handleUpdateProfile = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,7 +63,8 @@ const Profile = () => {
                   <Label htmlFor="name">Full Name</Label>
                   <Input 
                     id="name" 
-                    defaultValue={user.name} 
+                    value={name} 
+                    onChange={(e) => setName(e.target.value)}
                     placeholder="Your full name" 
                   />
                 </div>
