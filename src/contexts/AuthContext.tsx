@@ -48,12 +48,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Login error:", error);
+        throw error;
+      }
       
       if (!data.user) {
         throw new Error("User not found");
       }
       
+      toast.success("Successfully logged in!");
       return;
     } catch (error) {
       console.error("Login error:", error);

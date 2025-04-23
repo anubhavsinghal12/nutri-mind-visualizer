@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from "sonner";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useNavigate } from "react-router-dom";
 
 export const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -14,6 +15,7 @@ export const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,6 +25,7 @@ export const LoginForm = () => {
     try {
       await login(email, password);
       toast.success("Login successful!");
+      navigate("/dashboard");
     } catch (error) {
       const errorMessage = error instanceof Error 
         ? error.message 
@@ -96,17 +99,26 @@ export const SignupForm = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { signup } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
     try {
       await signup(email, name, password);
-      toast.success("Account created successfully!");
+      // Allow time for the success toast to display
+      setTimeout(() => navigate("/login"), 2000);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Signup failed");
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Signup failed. Please try again.";
+      
+      setError(errorMessage);
+      console.error("Signup error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -121,6 +133,12 @@ export const SignupForm = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {error && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="name" className="text-sm font-medium">

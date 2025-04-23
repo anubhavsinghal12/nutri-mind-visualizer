@@ -2,9 +2,17 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import { AuthPage } from "./AuthPages";
+import { useEffect } from "react";
 
 const Index = () => {
   const { isAuthenticated, loading } = useAuth();
+
+  useEffect(() => {
+    // This ensures we're properly checking auth state
+    if (isAuthenticated) {
+      console.log("User is authenticated, should redirect to dashboard");
+    }
+  }, [isAuthenticated]);
 
   if (loading) {
     return (
