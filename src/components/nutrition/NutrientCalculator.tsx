@@ -1,11 +1,13 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Slider } from "@/components/ui/slider";
-import { Calculator, Weight, Ruler } from "lucide-react";
+import { Calculator } from "lucide-react";
+import { UserMetricsInput } from "./UserMetricsInput";
+import { GenderSelect } from "./GenderSelect";
+import { ActivityLevelSelect } from "./ActivityLevelSelect";
+import { NutritionGoalSlider } from "./NutritionGoalSlider";
+import { NutritionResults } from "./NutritionResults";
 
 export const NutrientCalculator = () => {
   const [weight, setWeight] = useState<string>("");
@@ -44,13 +46,9 @@ export const NutrientCalculator = () => {
     }
     
     const tdee = bmr * activityMultipliers[activityLevel as keyof typeof activityMultipliers];
-    
     const calories = Math.round(tdee * (goalMultiplier / 100));
-    
     const protein = Math.round(weightNum * (activityLevel === "sedentary" ? 1.6 : 2.2));
-    
     const fat = Math.round((calories * 0.25) / 9);
-    
     const carbCalories = calories - (protein * 4) - (fat * 9);
     const carbs = Math.round(carbCalories / 4);
     
@@ -70,132 +68,33 @@ export const NutrientCalculator = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="weight" className="flex items-center gap-2">
-                <Weight className="h-4 w-4" />
-                Weight (kg)
-              </Label>
-              <Input
-                id="weight"
-                type="number"
-                placeholder="Enter your weight in kg"
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="height" className="flex items-center gap-2">
-                <Ruler className="h-4 w-4" />
-                Height (cm)
-              </Label>
-              <Input
-                id="height"
-                type="number"
-                placeholder="Enter your height in cm"
-                value={height}
-                onChange={(e) => setHeight(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="age">Age (years)</Label>
-            <Input
-              id="age"
-              type="number"
-              placeholder="Enter your age"
-              value={age}
-              onChange={(e) => setAge(e.target.value)}
-            />
-          </div>
+          <UserMetricsInput
+            weight={weight}
+            height={height}
+            age={age}
+            onWeightChange={setWeight}
+            onHeightChange={setHeight}
+            onAgeChange={setAge}
+          />
           
-          <div className="space-y-2">
-            <Label>Gender</Label>
-            <RadioGroup value={gender} onValueChange={setGender} className="flex space-x-4">
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="male" id="male" />
-                <Label htmlFor="male">Male</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="female" id="female" />
-                <Label htmlFor="female">Female</Label>
-              </div>
-            </RadioGroup>
-          </div>
+          <GenderSelect
+            gender={gender}
+            onGenderChange={setGender}
+          />
           
-          <div className="space-y-2">
-            <Label>Activity Level</Label>
-            <RadioGroup value={activityLevel} onValueChange={setActivityLevel} className="space-y-1">
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="sedentary" id="sedentary" />
-                <Label htmlFor="sedentary">Sedentary (little or no exercise)</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="light" id="light" />
-                <Label htmlFor="light">Light (light exercise 1-3 days/week)</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="moderate" id="moderate" />
-                <Label htmlFor="moderate">Moderate (moderate exercise 3-5 days/week)</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="active" id="active" />
-                <Label htmlFor="active">Active (hard exercise 6-7 days/week)</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="veryActive" id="veryActive" />
-                <Label htmlFor="veryActive">Very Active (intense exercise daily)</Label>
-              </div>
-            </RadioGroup>
-          </div>
+          <ActivityLevelSelect
+            activityLevel={activityLevel}
+            onActivityLevelChange={setActivityLevel}
+          />
 
-          <div className="space-y-2">
-            <Label>Nutrition Goal ({goalMultiplier}% of maintenance)</Label>
-            <Slider
-              value={[goalMultiplier]}
-              onValueChange={(values) => setGoalMultiplier(values[0])}
-              min={70}
-              max={130}
-              step={5}
-              className="w-full"
-            />
-            <div className="text-sm text-muted-foreground mt-1">
-              {goalMultiplier < 100 ? "Caloric deficit" : goalMultiplier > 100 ? "Caloric surplus" : "Maintenance"}
-            </div>
-          </div>
+          <NutritionGoalSlider
+            goalMultiplier={goalMultiplier}
+            onGoalChange={(values) => setGoalMultiplier(values[0])}
+          />
           
           <Button onClick={calculateNutrients} className="w-full">Calculate</Button>
           
-          {results && (
-            <div className="mt-4 p-4 bg-muted rounded-md">
-              <h4 className="font-medium text-lg mb-2">Your Custom Nutrition Plan</h4>
-              <div className="space-y-2">
-                <p className="flex justify-between">
-                  <span className="font-medium">Daily Calories:</span>
-                  <span>{results.calories} kcal</span>
-                </p>
-                <p className="flex justify-between">
-                  <span className="font-medium">Daily Protein:</span>
-                  <span>{results.protein}g</span>
-                </p>
-                <p className="flex justify-between">
-                  <span className="font-medium">Daily Carbs:</span>
-                  <span>{results.carbs}g</span>
-                </p>
-                <p className="flex justify-between">
-                  <span className="font-medium">Daily Fat:</span>
-                  <span>{results.fat}g</span>
-                </p>
-                <div className="text-xs text-muted-foreground mt-2 space-y-1">
-                  <p>* Based on Mifflin-St Jeor equation for BMR calculation</p>
-                  <p>* Protein recommendations based on activity level and body weight</p>
-                  <p>* Consult a healthcare professional for personalized advice</p>
-                </div>
-              </div>
-            </div>
-          )}
+          <NutritionResults results={results} />
         </div>
       </CardContent>
     </Card>
