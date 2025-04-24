@@ -11,6 +11,8 @@ const Index = () => {
     // This ensures we're properly checking auth state
     if (isAuthenticated) {
       console.log("User is authenticated, should redirect to dashboard");
+    } else {
+      console.log("User is not authenticated, showing auth page");
     }
   }, [isAuthenticated]);
 

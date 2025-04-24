@@ -38,6 +38,28 @@ export const LoginForm = () => {
     }
   };
 
+  const handleDemoLogin = async () => {
+    setEmail("demo@example.com");
+    setPassword("password123");
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      await login("demo@example.com", "password123");
+      toast.success("Demo login successful!");
+      navigate("/dashboard");
+    } catch (error) {
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Demo login failed. Please try again or use your own credentials.";
+      
+      setError(errorMessage);
+      console.error("Demo login error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
@@ -82,6 +104,23 @@ export const LoginForm = () => {
           </div>
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? "Logging in..." : "Login"}
+          </Button>
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or</span>
+            </div>
+          </div>
+          <Button 
+            type="button" 
+            variant="outline" 
+            className="w-full"
+            onClick={handleDemoLogin}
+            disabled={isLoading}
+          >
+            Use Demo Account
           </Button>
         </form>
       </CardContent>
@@ -177,7 +216,9 @@ export const SignupForm = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              minLength={6}
             />
+            <p className="text-xs text-muted-foreground mt-1">Password must be at least 6 characters</p>
           </div>
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? "Creating account..." : "Sign Up"}

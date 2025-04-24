@@ -25,6 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
+        console.log("Auth state changed:", _event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
@@ -33,6 +34,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Then check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("Initial session check:", session?.user?.email);
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -43,6 +45,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
+      console.log("Attempting login for:", email);
       const { error, data } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -50,13 +53,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) {
         console.error("Login error:", error);
-        throw error;
+        
+        // More user-friendly error messages
+        if (error.message === "Invalid login credentials") {
+          throw new Error("The email or password you entered is incorrect");
+        } else if (error.message.includes("Email not confirmed")) {
+          throw new Error("Please verify your email address before signing in");
+        } else {
+          throw error;
+        }
       }
       
-      if (!data.user) {
-        throw new Error("User not found");
-      }
-      
+      console.log("Login successful:", data.user?.email);
       toast.success("Successfully logged in!");
       return;
     } catch (error) {
@@ -67,6 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signup = async (email: string, name: string, password: string) => {
     try {
+      console.log("Attempting signup for:", email);
       const { error, data } = await supabase.auth.signUp({
         email,
         password,
@@ -77,8 +86,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Signup error:", error);
+        
+        // More user-friendly error messages
+        if (error.message.includes("already registered")) {
+          throw new Error("This email is already registered. Please login instead.");
+        } else {
+          throw error;
+        }
+      }
       
+      console.log("Signup result:", data);
       if (data?.user) {
         toast.success("Account created successfully! Please verify your email.");
       }
