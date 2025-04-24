@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
-import { Calculator, Weight, Height } from "lucide-react";
+import { Calculator, Weight, Ruler } from "lucide-react";
 
 export const NutrientCalculator = () => {
   const [weight, setWeight] = useState<string>("");
@@ -29,7 +28,6 @@ export const NutrientCalculator = () => {
     const heightNum = Number(height);
     const ageNum = Number(age);
     
-    // Activity level multipliers
     const activityMultipliers = {
       sedentary: 1.2,
       light: 1.375,
@@ -38,7 +36,6 @@ export const NutrientCalculator = () => {
       veryActive: 1.9
     };
     
-    // BMR calculation using Mifflin-St Jeor Equation
     let bmr;
     if (gender === "male") {
       bmr = 10 * weightNum + 6.25 * heightNum - 5 * ageNum + 5;
@@ -46,20 +43,14 @@ export const NutrientCalculator = () => {
       bmr = 10 * weightNum + 6.25 * heightNum - 5 * ageNum - 161;
     }
     
-    // Calculate TDEE (Total Daily Energy Expenditure)
     const tdee = bmr * activityMultipliers[activityLevel as keyof typeof activityMultipliers];
     
-    // Apply goal multiplier (percentage)
     const calories = Math.round(tdee * (goalMultiplier / 100));
     
-    // Macronutrient calculations
-    // Protein: 1.6-2.2g per kg for active individuals
     const protein = Math.round(weightNum * (activityLevel === "sedentary" ? 1.6 : 2.2));
     
-    // Fat: 25% of total calories
     const fat = Math.round((calories * 0.25) / 9);
     
-    // Remaining calories from carbs
     const carbCalories = calories - (protein * 4) - (fat * 9);
     const carbs = Math.round(carbCalories / 4);
     
@@ -96,7 +87,7 @@ export const NutrientCalculator = () => {
             
             <div className="space-y-2">
               <Label htmlFor="height" className="flex items-center gap-2">
-                <Height className="h-4 w-4" />
+                <Ruler className="h-4 w-4" />
                 Height (cm)
               </Label>
               <Input
@@ -210,4 +201,3 @@ export const NutrientCalculator = () => {
     </Card>
   );
 };
-
