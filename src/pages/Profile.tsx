@@ -1,4 +1,3 @@
-
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,10 +7,10 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { User, Shield } from "lucide-react";
 import { useState } from "react";
+import { NutritionPreferences } from "@/components/profile/NutritionPreferences";
 
 const Profile = () => {
   const { user, logout } = useAuth();
-  // Get user's name from metadata or use email as fallback
   const [name, setName] = useState(user?.user_metadata?.full_name || user?.email?.split('@')[0] || '');
 
   const handleUpdateProfile = (e: React.FormEvent) => {
@@ -158,23 +157,7 @@ const Profile = () => {
             </CardFooter>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-xl">Nutrition Preferences</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-center text-muted-foreground mb-4">
-                Advanced nutrition preferences will be available in the next update!
-              </p>
-              <Button 
-                variant="secondary" 
-                className="w-full"
-                onClick={() => toast.info("This feature is coming soon!")}
-              >
-                Customize Nutrition Goals
-              </Button>
-            </CardContent>
-          </Card>
+          <NutritionPreferences />
         </div>
       </div>
     </div>
