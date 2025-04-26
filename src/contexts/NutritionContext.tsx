@@ -15,9 +15,9 @@ const NutritionContext = createContext<NutritionContextType | undefined>(undefin
 
 // Default recommended values (simplified)
 const DEFAULT_RECOMMENDATIONS = {
-  calories: { name: "Calories", actual: 0, recommended: 2000, unit: "kcal" },
-  protein: { name: "Protein", actual: 0, recommended: 50, unit: "g" },
-  carbs: { name: "Carbohydrates", actual: 0, recommended: 275, unit: "g" },
+  calories: { name: "Calories", actual: 0, recommended: 2500, unit: "kcal" },
+  protein: { name: "Protein", actual: 0, recommended: 100, unit: "g" },
+  carbs: { name: "Carbohydrates", actual: 0, recommended: 300, unit: "g" },
   fat: { name: "Fat", actual: 0, recommended: 78, unit: "g" },
   fiber: { name: "Fiber", actual: 0, recommended: 28, unit: "g" },
   sugar: { name: "Sugar", actual: 0, recommended: 50, unit: "g" },
