@@ -13,7 +13,7 @@ export const RecommendationsList = ({ recommendations }: RecommendationsListProp
       <Card>
         <CardContent className="p-6">
           <p className="text-center text-muted-foreground">
-            Log your meals to get AI-powered recommendations.
+            Log your meals to get  recommendations.
           </p>
         </CardContent>
       </Card>

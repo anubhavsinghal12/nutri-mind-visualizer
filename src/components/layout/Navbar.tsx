@@ -19,7 +19,7 @@ export const Navbar = () => {
           <div className="flex items-center">
             <Link to="/dashboard" className="flex items-center">
               <BrainCircuit className="h-8 w-8 text-primary" />
-              <span className="ml-2 text-xl font-bold text-primary">NutriMind AI</span>
+              <span className="ml-2 text-xl font-bold text-primary">NutriMind </span>
             </Link>
           </div>
           
