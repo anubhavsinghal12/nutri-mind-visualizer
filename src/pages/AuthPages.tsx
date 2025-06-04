@@ -5,6 +5,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AuthHeader } from "@/components/auth/AuthHeader";
+import { Link } from "react-router-dom";  
 
 export const LoginPage = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -29,9 +30,9 @@ export const LoginPage = () => {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Don't have an account?{" "}
-            <a href="/signup" className="font-medium text-primary hover:text-primary/80">
-              Sign up here
-            </a>
+           <Link to="/signup" className="font-medium text-primary hover:text-primary/80">
+  Sign up here
+</Link>
           </p>
         </div>
       </div>
